@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+@import "tailwindcss";
 
 @theme {
   --font-sans: 'Instrument Sans', 'DM Sans', system-ui, sans-serif;
