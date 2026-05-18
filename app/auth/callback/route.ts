@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
           },
           // Write session cookies onto the redirect response so the browser
           // receives them in the same round-trip as the redirect.
-          setAll(cookiesToSet) {
+          setAll(cookiesToSet: { name: string; value: string; options?: object }[]) {
             cookiesToSet.forEach(({ name, value, options }) => {
               redirectResponse.cookies.set(name, value, options);
             });
