@@ -9,8 +9,6 @@ const tabs = [
   { href: '/wardrobe/add', label: 'Add', icon: '➕' },
   { href: '/outfits', label: 'Outfits', icon: '✨' },
   { href: '/history', label: 'History', icon: '📅' },
-  { href: '/profile', label: 'Profile', icon: '📐' },
-  { href: '/settings', label: 'Settings', icon: '⚙️' },
 ];
 
 export default function AppShell({ children, itemCount }: { children: React.ReactNode; itemCount?: number }) {
