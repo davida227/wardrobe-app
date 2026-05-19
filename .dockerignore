@@ -1,0 +1,17 @@
+# Dependencies — Docker installs these fresh inside the image
+node_modules
+
+# Next.js build output — Docker builds this inside the image
+.next
+
+# Local environment variables — never bake secrets into an image
+.env.local
+.env*.local
+
+# Git history — not needed at runtime
+.git
+.gitignore
+
+# Editor and OS clutter
+.DS_Store
+*.log
