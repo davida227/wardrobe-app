@@ -1,0 +1,38 @@
+version: '3.8'
+
+# Services are the containers that will run together
+services:
+  # The wardrobe app
+  app:
+    # Load runtime environment variables from .env (Docker Compose also reads
+    # this file automatically for ${VAR} interpolation in this file itself).
+    env_file: .env
+
+    # Build the image from the Dockerfile in the current directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # Pass build-time args for the public Supabase keys
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+
+    # Container name for easy reference
+    container_name: wardrobe-app
+
+    # Port mapping: host:container
+    ports:
+      - "3000:3000"
+
+    # Environment variables injected at runtime
+    # These come from a .env.local file (see instructions below)
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      # These are already in the build args, but setting them here too
+      # ensures they're available at runtime if needed
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+
+    # Restart policy: unless-stopped means "restart automatically if it crashes,
+    # unless I explicitly stopped it". Good for production-like behavior.
+    restart: unless-stopped
