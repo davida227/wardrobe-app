@@ -2,5 +2,3 @@ node_modules
 .next
 .env.local
 .env
-.env
-next-env.d.ts
