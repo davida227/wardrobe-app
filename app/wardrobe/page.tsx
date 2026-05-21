@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createClient } from '@/lib/supabase-browser';
 import AppShell from '@/components/AppShell';
 import { ClothingItem, CATEGORIES } from '@/lib/types';
@@ -78,7 +79,8 @@ export default function WardrobePage() {
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {filtered.map(item => (
-            <div key={item.id} className="group relative aspect-square bg-gray-100 rounded-xl overflow-hidden cursor-pointer">
+            <Link key={item.id} href={`/wardrobe/${item.id}`}
+              className="group relative aspect-square bg-gray-100 rounded-xl overflow-hidden">
               {item.thumbnail_url || item.image_url ? (
                 <img
                   src={item.thumbnail_url || item.image_url}
@@ -94,7 +96,7 @@ export default function WardrobePage() {
                 <p className="text-white text-xs font-medium truncate">{item.name}</p>
                 {item.color && <p className="text-white/70 text-xs truncate">{item.color}</p>}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
