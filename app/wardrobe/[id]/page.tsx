@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 import AppShell from '@/components/AppShell';
-import { ClothingItem, CATEGORIES, SEASONS, FORMALITY } from '@/lib/types';
+import { ClothingItem, CATEGORIES, SEASONS, FORMALITY, OCCASIONS } from '@/lib/types';
 
 export default function ItemDetailPage() {
   const [item, setItem] = useState<ClothingItem | null>(null);
@@ -101,6 +101,14 @@ export default function ItemDetailPage() {
     set('seasons', current.includes(season)
       ? current.filter(s => s !== season)
       : [...current, season]
+    );
+  };
+
+  const toggleOccasion = (occasion: string) => {
+    const current = (edits.occasions ?? item?.occasions ?? []) as string[];
+    set('occasions', current.includes(occasion)
+      ? current.filter(o => o !== occasion)
+      : [...current, occasion]
     );
   };
 
@@ -270,6 +278,35 @@ export default function ItemDetailPage() {
             )}
           </div>
 
+          {/* Good For (occasions) */}
+          <div className="col-span-2">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Good For</label>
+            {editing ? (
+              <div className="flex flex-wrap gap-2">
+                {OCCASIONS.map(o => {
+                  const active = ((edits.occasions ?? item.occasions ?? []) as string[]).includes(o);
+                  return (
+                    <button key={o} type="button" onClick={() => toggleOccasion(o)}
+                      className={`px-3 py-1 rounded-full text-sm border transition-all ${
+                        active ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      }`}>
+                      {o}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {(val('occasions') as string[])?.length
+                  ? (val('occasions') as string[]).map(o => (
+                      <span key={o} className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">{o}</span>
+                    ))
+                  : <p className="text-sm text-gray-400">—</p>
+                }
+              </div>
+            )}
+          </div>
+
           {/* Notes */}
           <div className="col-span-2">
             <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Notes</label>
@@ -278,6 +315,47 @@ export default function ItemDetailPage() {
                 rows={3} className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" />
             ) : (
               <p className="text-sm text-gray-600">{val('notes') as string || '—'}</p>
+            )}
+          </div>
+
+          {/* Purchase date */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Date Purchased</label>
+            {editing ? (
+              <input
+                type="date"
+                value={(val('purchase_date') as string) ?? ''}
+                onChange={e => set('purchase_date', e.target.value || null)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+              />
+            ) : (
+              <p className="text-sm text-gray-600">
+                {val('purchase_date')
+                  ? new Date(val('purchase_date') as string).toLocaleDateString()
+                  : '—'}
+              </p>
+            )}
+          </div>
+
+          {/* Purchase price */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Price Paid</label>
+            {editing ? (
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={(val('purchase_price') as number) ?? ''}
+                onChange={e => set('purchase_price', e.target.value ? parseFloat(e.target.value) : null)}
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+              />
+            ) : (
+              <p className="text-sm text-gray-600">
+                {val('purchase_price') != null
+                  ? `$${(val('purchase_price') as number).toFixed(2)}`
+                  : '—'}
+              </p>
             )}
           </div>
 

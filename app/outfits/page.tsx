@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 import AppShell from '@/components/AppShell';
-import { ClothingItem, SavedOutfit, OCCASIONS, TEMPERATURES, WEATHER_CONDITIONS } from '@/lib/types';
+import { ClothingItem, SavedOutfit, OCCASIONS, TEMPERATURES, TIME_OF_DAY } from '@/lib/types';
 
 type GeneratedOutfit = {
   name: string;
@@ -22,7 +22,7 @@ export default function OutfitsPage() {
   const [generating, setGenerating] = useState(false);
   const [occasion, setOccasion] = useState('');
   const [temperature, setTemperature] = useState('');
-  const [weatherCondition, setWeatherCondition] = useState('');
+  const [timeOfDay, setTimeOfDay] = useState('');
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState<number | null>(null);
   const router = useRouter();
@@ -59,7 +59,7 @@ export default function OutfitsPage() {
           items: wardrobeItems,
           occasion: occasion || undefined,
           temperature: temperature || undefined,
-          weatherCondition: weatherCondition || undefined,
+          timeOfDay: timeOfDay || undefined,
         }),
       });
       const data = await res.json();
@@ -152,29 +152,29 @@ export default function OutfitsPage() {
                 </div>
               </div>
 
-              {/* Weather condition */}
+              {/* Time of day */}
               <div>
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-                  Conditions
+                  Time of Day
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {WEATHER_CONDITIONS.map(w => (
+                  {TIME_OF_DAY.map(t => (
                     <button
-                      key={w.label}
-                      onClick={() => setWeatherCondition(weatherCondition === w.label ? '' : w.label)}
+                      key={t.label}
+                      onClick={() => setTimeOfDay(timeOfDay === t.label ? '' : t.label)}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                        weatherCondition === w.label
+                        timeOfDay === t.label
                           ? 'bg-gray-900 text-white border-gray-900'
                           : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
                       }`}
                     >
-                      {w.emoji} {w.label}
+                      {t.emoji} {t.label}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <button
+<button
                 onClick={generate}
                 disabled={generating}
                 className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
