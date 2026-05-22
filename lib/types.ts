@@ -8,10 +8,13 @@ export interface ClothingItem {
   fabric: string;
   formality: string;
   seasons: string[];
+  occasions: string[];      // user-selected occasions this item works for
   notes: string;
   image_url: string;
   thumbnail_url: string;
   needs_own_photo: boolean;
+  purchase_date: string | null;   // ISO date string, e.g. "2024-03-15"
+  purchase_price: number | null;  // in USD
   created_at: string;
 }
 
@@ -54,6 +57,12 @@ export const SEASONS = ['Spring', 'Summer', 'Fall', 'Winter', 'All Season'] as c
 export const FORMALITY = ['Casual', 'Smart Casual', 'Business Casual', 'Business Formal', 'Formal'] as const;
 export const OCCASIONS = ['Everyday', 'Work', 'Date Night', 'Weekend', 'Workout', 'Formal', 'Travel'] as const;
 
+export const TIME_OF_DAY = [
+  { label: 'Morning',   emoji: '🌅', description: 'Before noon' },
+  { label: 'Afternoon', emoji: '☀️',  description: 'Noon to 5pm' },
+  { label: 'Evening',   emoji: '🌙', description: 'After 5pm' },
+] as const;
+
 export const TEMPERATURES = [
   { label: 'Hot',   emoji: '🔥', description: '85°F+ (29°C+)' },
   { label: 'Warm',  emoji: '☀️',  description: '70–84°F (21–29°C)' },
@@ -62,13 +71,6 @@ export const TEMPERATURES = [
   { label: 'Cold',  emoji: '🧊',  description: 'Below 50°F (10°C)' },
 ] as const;
 
-export const WEATHER_CONDITIONS = [
-  { label: 'Sunny',  emoji: '☀️'  },
-  { label: 'Cloudy', emoji: '☁️'  },
-  { label: 'Rainy',  emoji: '🌧️'  },
-  { label: 'Windy',  emoji: '💨'  },
-  { label: 'Snowy',  emoji: '❄️'  },
-] as const;
 
 export const AI_MODELS = [
   { id: 'claude-sonnet-4-20250514', label: 'Sonnet 4' },

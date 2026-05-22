@@ -4,7 +4,7 @@ import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 import AppShell from '@/components/AppShell';
-import { CATEGORIES, SEASONS, FORMALITY } from '@/lib/types';
+import { CATEGORIES, SEASONS, FORMALITY, OCCASIONS } from '@/lib/types';
 import { fileToBase64, compressImage, uploadImage } from '@/lib/image-utils';
 
 type Analysis = {
@@ -18,10 +18,17 @@ type Analysis = {
   notes: string;
 };
 
+type UserFields = {
+  occasions: string[];
+  purchaseDate: string;
+  purchasePrice: string;
+};
+
 export default function AddPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const [userFields, setUserFields] = useState<UserFields>({ occasions: [], purchaseDate: '', purchasePrice: '' });
   const [analyzing, setAnalyzing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -32,6 +39,7 @@ export default function AddPage() {
   const handleFile = async (file: File) => {
     setError('');
     setAnalysis(null);
+    setUserFields({ occasions: [], purchaseDate: '', purchasePrice: '' });
     const base64 = await fileToBase64(file);
     const compressed = await compressImage(base64, 800, 0.8);
     setImagePreview(compressed);
@@ -78,9 +86,12 @@ export default function AddPage() {
         fabric: analysis.fabric,
         formality: analysis.formality,
         seasons: analysis.seasons,
+        occasions: userFields.occasions,
         notes: analysis.notes,
         image_url: imageUrl,
         thumbnail_url: thumbnailUrl,
+        purchase_date: userFields.purchaseDate || null,
+        purchase_price: userFields.purchasePrice ? parseFloat(userFields.purchasePrice) : null,
       });
 
       if (dbError) throw new Error(dbError.message);
@@ -101,6 +112,15 @@ export default function AddPage() {
       ? analysis.seasons.filter(s => s !== season)
       : [...analysis.seasons, season];
     update('seasons', seasons);
+  };
+
+  const toggleOccasion = (occasion: string) => {
+    setUserFields(prev => ({
+      ...prev,
+      occasions: prev.occasions.includes(occasion)
+        ? prev.occasions.filter(o => o !== occasion)
+        : [...prev.occasions, occasion],
+    }));
   };
 
   return (
@@ -136,7 +156,7 @@ export default function AddPage() {
 
         {error && <div className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">{error}</div>}
 
-        {/* Editable analysis */}
+        {/* Editable fields — shown once analysis completes */}
         {analysis && (
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm text-green-700 bg-green-50 px-3 py-2 rounded-lg">
@@ -144,6 +164,8 @@ export default function AddPage() {
             </div>
 
             <div className="grid grid-cols-2 gap-3">
+
+              {/* AI-filled fields */}
               <div className="col-span-2">
                 <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Name</label>
                 <input value={analysis.name} onChange={e => update('name', e.target.value)}
@@ -205,6 +227,49 @@ export default function AddPage() {
                 <textarea value={analysis.notes} onChange={e => update('notes', e.target.value)} rows={2}
                   className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 resize-none" />
               </div>
+
+              {/* User-filled fields */}
+              <div className="col-span-2 border-t border-gray-100 pt-3">
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Good For (select all that apply)
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {OCCASIONS.map(o => (
+                    <button key={o} type="button" onClick={() => toggleOccasion(o)}
+                      className={`px-3 py-1 rounded-full text-sm border transition-all ${
+                        userFields.occasions.includes(o)
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      }`}>
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Date Purchased</label>
+                <input
+                  type="date"
+                  value={userFields.purchaseDate}
+                  onChange={e => setUserFields(prev => ({ ...prev, purchaseDate: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Price Paid ($)</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder="0.00"
+                  value={userFields.purchasePrice}
+                  onChange={e => setUserFields(prev => ({ ...prev, purchasePrice: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900"
+                />
+              </div>
+
             </div>
 
             <button onClick={handleSave} disabled={saving}

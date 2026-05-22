@@ -109,3 +109,12 @@ create policy "Public can view clothing images" on storage.objects
 create index idx_clothing_items_user on clothing_items(user_id);
 create index idx_saved_outfits_user on saved_outfits(user_id);
 create index idx_outfit_history_user_date on outfit_history(user_id, date);
+
+-- ============================================
+-- ADDENDUM: clothing item metadata columns
+-- Run this separately if the base migration has already been applied.
+-- ============================================
+alter table clothing_items
+  add column if not exists occasions    text[]   default '{}',
+  add column if not exists purchase_date date    default null,
+  add column if not exists purchase_price numeric(10,2) default null;
