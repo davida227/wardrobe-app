@@ -54,6 +54,22 @@ export const SEASONS = ['Spring', 'Summer', 'Fall', 'Winter', 'All Season'] as c
 export const FORMALITY = ['Casual', 'Smart Casual', 'Business Casual', 'Business Formal', 'Formal'] as const;
 export const OCCASIONS = ['Everyday', 'Work', 'Date Night', 'Weekend', 'Workout', 'Formal', 'Travel'] as const;
 
+export const TEMPERATURES = [
+  { label: 'Hot',   emoji: '🔥', description: '85°F+ (29°C+)' },
+  { label: 'Warm',  emoji: '☀️',  description: '70–84°F (21–29°C)' },
+  { label: 'Mild',  emoji: '🌤️',  description: '60–69°F (15–20°C)' },
+  { label: 'Cool',  emoji: '🍂',  description: '50–59°F (10–14°C)' },
+  { label: 'Cold',  emoji: '🧊',  description: 'Below 50°F (10°C)' },
+] as const;
+
+export const WEATHER_CONDITIONS = [
+  { label: 'Sunny',  emoji: '☀️'  },
+  { label: 'Cloudy', emoji: '☁️'  },
+  { label: 'Rainy',  emoji: '🌧️'  },
+  { label: 'Windy',  emoji: '💨'  },
+  { label: 'Snowy',  emoji: '❄️'  },
+] as const;
+
 export const AI_MODELS = [
   { id: 'claude-sonnet-4-20250514', label: 'Sonnet 4' },
   { id: 'claude-opus-4-20250514', label: 'Opus 4' },

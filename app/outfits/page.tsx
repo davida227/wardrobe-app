@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase-browser';
 import AppShell from '@/components/AppShell';
-import { ClothingItem, SavedOutfit, OCCASIONS } from '@/lib/types';
+import { ClothingItem, SavedOutfit, OCCASIONS, TEMPERATURES, WEATHER_CONDITIONS } from '@/lib/types';
 
 type GeneratedOutfit = {
   name: string;
@@ -21,6 +21,8 @@ export default function OutfitsPage() {
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [occasion, setOccasion] = useState('');
+  const [temperature, setTemperature] = useState('');
+  const [weatherCondition, setWeatherCondition] = useState('');
   const [error, setError] = useState('');
   const [savingId, setSavingId] = useState<number | null>(null);
   const router = useRouter();
@@ -53,7 +55,12 @@ export default function OutfitsPage() {
       const res = await fetch('/api/generate-outfits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: wardrobeItems, occasion: occasion || undefined }),
+        body: JSON.stringify({
+          items: wardrobeItems,
+          occasion: occasion || undefined,
+          temperature: temperature || undefined,
+          weatherCondition: weatherCondition || undefined,
+        }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -89,7 +96,7 @@ export default function OutfitsPage() {
   return (
     <AppShell>
       <div className="space-y-6">
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h2 className="text-lg font-semibold">Outfit Suggestions</h2>
 
           {wardrobeItems.length < 3 ? (
@@ -99,15 +106,80 @@ export default function OutfitsPage() {
               <p className="text-sm mt-1">You need at least 3 items for outfit suggestions</p>
             </div>
           ) : (
-            <div className="flex gap-2">
-              <select value={occasion} onChange={e => setOccasion(e.target.value)}
-                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 bg-white">
-                <option value="">Any occasion</option>
-                {OCCASIONS.map(o => <option key={o}>{o}</option>)}
-              </select>
-              <button onClick={generate} disabled={generating}
-                className="px-5 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors whitespace-nowrap">
-                {generating ? '✨ Generating...' : '✨ Generate'}
+            <div className="space-y-4">
+
+              {/* Occasion */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Occasion
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {OCCASIONS.map(o => (
+                    <button
+                      key={o}
+                      onClick={() => setOccasion(occasion === o ? '' : o)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                        occasion === o
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      {o}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Temperature */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Temperature
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {TEMPERATURES.map(t => (
+                    <button
+                      key={t.label}
+                      onClick={() => setTemperature(temperature === t.label ? '' : t.label)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                        temperature === t.label
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      {t.emoji} {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Weather condition */}
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+                  Conditions
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {WEATHER_CONDITIONS.map(w => (
+                    <button
+                      key={w.label}
+                      onClick={() => setWeatherCondition(weatherCondition === w.label ? '' : w.label)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                        weatherCondition === w.label
+                          ? 'bg-gray-900 text-white border-gray-900'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                      }`}
+                    >
+                      {w.emoji} {w.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <button
+                onClick={generate}
+                disabled={generating}
+                className="w-full py-2.5 bg-gray-900 text-white rounded-xl text-sm font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
+              >
+                {generating ? '✨ Generating...' : '✨ Generate Outfits'}
               </button>
             </div>
           )}
