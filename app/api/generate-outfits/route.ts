@@ -36,7 +36,9 @@ Return ONLY valid JSON array, no markdown or explanation.`,
       ],
     });
 
-    const text = response.content[0].type === 'text' ? response.content[0].text : '[]';
+    const raw = response.content[0].type === 'text' ? response.content[0].text : '[]';
+    // Strip markdown code fences if the model wrapped the response (e.g. ```json ... ```)
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
     const outfits = JSON.parse(text);
     return NextResponse.json({ outfits });
   } catch (e: any) {
