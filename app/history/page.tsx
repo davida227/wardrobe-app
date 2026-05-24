@@ -151,8 +151,10 @@ export default function HistoryPage() {
                   <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
                     {wardrobeItems.map(item => (
                       <button key={item.id} type="button" onClick={() => toggleItem(item.id)}
-                        className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                          form.item_ids.includes(item.id) ? 'border-gray-900' : 'border-transparent'
+                        className={`relative w-full aspect-square rounded-lg overflow-hidden border-2 p-0 block transition-all ${
+                          form.item_ids.includes(item.id)
+                            ? 'border-gray-900 ring-2 ring-gray-900/10'
+                            : 'border-gray-100 hover:border-gray-300'
                         }`}>
                         {item.thumbnail_url ? (
                           <img src={item.thumbnail_url} alt={item.name} className="w-full h-full object-cover" />

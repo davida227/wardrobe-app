@@ -46,6 +46,7 @@ export interface UserProfile {
   user_id: string;
   measurements: Record<string, string>;
   style_notes: string;
+  preferred_model: string;
   updated_at: string;
 }
 
@@ -73,7 +74,10 @@ export const TEMPERATURES = [
 
 
 export const AI_MODELS = [
-  { id: 'claude-sonnet-4-20250514', label: 'Sonnet 4' },
-  { id: 'claude-opus-4-20250514', label: 'Opus 4' },
-  { id: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5' },
+  { id: 'claude-sonnet-4-20250514', label: 'Claude 4 Sonnet' },
+  { id: 'claude-opus-4-20250514', label: 'Claude 4 Opus' },
+  { id: 'claude-haiku-4-5-20251001', label: 'Claude 4.5 Haiku' },
+  { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+  { id: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+  { id: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash' },
 ] as const;
