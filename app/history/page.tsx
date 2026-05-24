@@ -90,6 +90,23 @@ export default function HistoryPage() {
 
   const formatDate = (d: string) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
+  // Group wardrobe items by category
+  const itemsByCategory = wardrobeItems.reduce((acc, item) => {
+    const cat = item.category || 'Other';
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(item);
+    return acc;
+  }, {} as Record<string, ClothingItem[]>);
+
+  const categoriesWithItems = ['Tops', 'Bottoms', 'Outerwear', 'Shoes', 'Accessories', 'Dresses', 'Activewear', 'Formal'].filter(
+    cat => itemsByCategory[cat]?.length > 0
+  );
+
+  const categoryIcons: Record<string, string> = {
+    Tops: '👕', Bottoms: '👖', Outerwear: '🧥', Shoes: '👟',
+    Accessories: '👜', Dresses: '👗', Activewear: '🩱', Formal: '🤵',
+  };
+
   return (
     <AppShell>
       <div className="space-y-4">
@@ -146,25 +163,36 @@ export default function HistoryPage() {
               </div>
 
               {wardrobeItems.length > 0 && (
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Items Worn (optional)</label>
-                  <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto">
-                    {wardrobeItems.map(item => (
-                      <button key={item.id} type="button" onClick={() => toggleItem(item.id)}
-                        className={`relative w-full aspect-square rounded-lg overflow-hidden border-2 p-0 block transition-all ${
-                          form.item_ids.includes(item.id)
-                            ? 'border-gray-900 ring-2 ring-gray-900/10'
-                            : 'border-gray-100 hover:border-gray-300'
-                        }`}>
-                        {item.thumbnail_url ? (
-                          <img src={item.thumbnail_url} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xl">👔</div>
-                        )}
-                        {form.item_ids.includes(item.id) && (
-                          <div className="absolute top-1 right-1 bg-gray-900 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">✓</div>
-                        )}
-                      </button>
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide">Items Worn (optional)</label>
+                  <div className="space-y-4 max-h-56 overflow-y-auto pr-1 border border-gray-100 rounded-xl p-3 bg-gray-50/30">
+                    {categoriesWithItems.map(cat => (
+                      <div key={cat} className="space-y-2">
+                        <h4 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
+                          <span>{categoryIcons[cat] ?? '👔'}</span>
+                          <span>{cat}</span>
+                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-bold">{itemsByCategory[cat].length}</span>
+                        </h4>
+                        <div className="grid grid-cols-4 gap-2">
+                          {itemsByCategory[cat].map(item => (
+                            <button key={item.id} type="button" onClick={() => toggleItem(item.id)}
+                              className={`relative w-full aspect-square rounded-lg overflow-hidden border-2 p-0 block transition-all ${
+                                form.item_ids.includes(item.id)
+                                  ? 'border-gray-900 ring-2 ring-gray-900/10'
+                                  : 'border-gray-100 hover:border-gray-300 animate-[pulse_0.15s_ease-out_1]'
+                              }`}>
+                              {item.thumbnail_url ? (
+                                <img src={item.thumbnail_url} alt={item.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full bg-gray-100 flex items-center justify-center text-xl">👔</div>
+                              )}
+                              {form.item_ids.includes(item.id) && (
+                                <div className="absolute top-1 right-1 bg-gray-900 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">✓</div>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
